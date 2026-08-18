@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>云析智能客服助手 · 飞书机器人行为模拟器</title>
+<style>
+  :root{
+    --feishu:#3370ff; --feishu-d:#245bdb; --bg:#f5f6f7; --panel:#fff;
+    --me:#3370ff; --bot:#fff; --line:#e5e6eb; --text:#1f2329; --sub:#8f959e;
+    --ok:#00b42a; --warn:#ff7d00; --err:#f53f3f;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+    background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column}
+  /* 顶栏 */
+  header{background:var(--panel);border-bottom:1px solid var(--line);
+    padding:10px 18px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+  .bot-avatar{width:38px;height:38px;border-radius:9px;background:var(--feishu);
+    color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px}
+  .title h1{font-size:15px;font-weight:600}
+  .title p{font-size:12px;color:var(--sub);margin-top:2px}
+  .role-box{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:13px}
+  .role-box select{padding:6px 10px;border:1px solid var(--line);border-radius:6px;
+    font-size:13px;background:#fff;color:var(--text)}
+  /* 主体 */
+  .main{flex:1;display:flex;min-height:0}
+  .chat{flex:1;display:flex;flex-direction:column;min-width:0}
+  .chat-scroll{flex:1;overflow-y:auto;padding:20px 18px}
+  .group-tip{text-align:center;color:var(--sub);font-size:12px;margin:6px 0 16px}
+  .msg{display:flex;gap:10px;margin-bottom:16px;align-items:flex-start}
+  .msg .av{width:34px;height:34px;border-radius:8px;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff}
+  .msg.bot .av{background:var(--feishu)}
+  .msg.me .av{background:#7a8599}
+  .bubble{max-width:74%;padding:10px 13px;border-radius:8px;line-height:1.6;font-size:14px;
+    word-break:break-word}
+  .msg.me{justify-content:flex-end}
+  .msg.me .bubble{background:var(--me);color:#fff;border-top-right-radius:2px}
+  .msg.bot .bubble{background:var(--bot);border:1px solid var(--line);border-top-left-radius:2px}
+  .name{font-size:12px;color:var(--sub);margin-bottom:3px}
+  .msg.me .name{text-align:right}
+  .sysline{font-size:12px;color:var(--sub);background:#eef0f3;border-radius:6px;
+    padding:6px 10px;margin:0 44px 14px;line-height:1.5}
+  .sysline b{color:var(--feishu-d)}
+  .cites{margin-top:8px;border-top:1px dashed var(--line);padding-top:8px}
+  .cite{font-size:12px;background:#f7f8fa;border-radius:6px;padding:6px 9px;margin-top:6px}
+  .cite .src{color:var(--feishu-d);font-weight:600}
+  .cite .snip{color:#4e5969;display:block;margin-top:2px}
+  .badge{display:inline-block;font-size:11px;padding:1px 7px;border-radius:10px;margin-left:6px}
+  .badge.ok{background:#e8ffea;color:var(--ok)}
+  .badge.no{background:#ffece8;color:var(--err)}
+  /* 输入条 */
+  .inputbar{border-top:1px solid var(--line);background:var(--panel);padding:12px 16px;
+    display:flex;gap:10px;align-items:flex-end;flex-shrink:0}
+  .inputbar textarea{flex:1;resize:none;border:1px solid var(--line);border-radius:8px;
+    padding:10px 12px;font-size:14px;font-family:inherit;height:46px;line-height:1.4;outline:none}
+  .inputbar textarea:focus{border-color:var(--feishu)}
+  .send{background:var(--feishu);color:#fff;border:none;border-radius:8px;padding:0 22px;
+    height:46px;font-size:14px;cursor:pointer}
+  .send:active{background:var(--feishu-d)}
+  .hint{font-size:11px;color:var(--sub);margin-right:auto;align-self:center}
+  /* 右侧抽屉 */
+  .side{width:320px;background:var(--panel);border-left:1px solid var(--line);
+    display:flex;flex-direction:column;flex-shrink:0}
+  .tabs{display:flex;border-bottom:1px solid var(--line)}
+  .tabs button{flex:1;padding:11px 0;background:none;border:none;font-size:13px;
+    color:var(--sub);cursor:pointer;border-bottom:2px solid transparent}
+  .tabs button.on{color:var(--feishu);border-bottom-color:var(--feishu);font-weight:600}
+  .tabbody{flex:1;overflow-y:auto;padding:14px}
+  .tab{padding:2px}
+  .doc{background:#f7f8fa;border-radius:8px;padding:10px 12px;margin-bottom:10px;font-size:13px}
+  .doc .fmt{font-size:11px;padding:1px 6px;border-radius:4px;background:#e8f0ff;color:var(--feishu-d);margin-left:6px}
+  .doc .meta{color:var(--sub);font-size:11px;margin-top:4px}
+  .uq{border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-bottom:10px;font-size:13px}
+  .uq .cnt{font-size:11px;color:var(--warn);margin-top:4px}
+  .uq.high{border-color:#ffd1c2;background:#fff7f3}
+  .tag{font-size:10px;padding:1px 6px;border-radius:8px;background:var(--err);color:#fff;margin-left:6px}
+  .adm label{display:block;font-size:12px;color:var(--sub);margin:10px 0 4px}
+  .adm input,.adm textarea{width:100%;border:1px solid var(--line);border-radius:6px;
+    padding:8px;font-size:13px;font-family:inherit;outline:none}
+  .adm textarea{height:90px;resize:vertical}
+  .adm button{margin-top:12px;width:100%;background:var(--ok);color:#fff;border:none;
+    border-radius:6px;padding:10px;font-size:13px;cursor:pointer}
+  .hidden{display:none!important}
+  .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1f2329;
+    color:#fff;padding:9px 16px;border-radius:8px;font-size:13px;opacity:0;transition:.25s;pointer-events:none}
+  .toast.show{opacity:.95}
+</style>
+</head>
+<body>
+<header>
+  <div class="bot-avatar">🤖</div>
+  <div class="title">
+    <h1>云析智能客服助手</h1>
+    <p>飞书机器人行为模拟器 · 还原员工在群里 @机器人 的真实答疑体验</p>
+  </div>
+  <div class="role-box">
+    <span>员工身份</span>
+    <input id="user" placeholder="姓名/open_id，如 张三" style="width:120px;padding:6px 10px;border:1px solid var(--line);border-radius:6px;font-size:13px">
+    <span>岗位</span>
+    <select id="role">
+      <option value="其他">其他 / 未指定</option>
+      <option value="销售">销售</option>
+      <option value="研发">研发</option>
+      <option value="财务">财务</option>
+      <option value="客服">客服</option>
+      <option value="行政/采购">行政 / 采购</option>
+    </select>
+  </div>
+</header>
+
+<div class="main">
+  <div class="chat">
+    <div class="chat-scroll" id="scroll">
+      <div class="group-tip">「云析科技 · 内部支持群」— 员工 @智能客服助手 即可提问</div>
+      <div class="msg bot">
+        <div class="av">🤖</div>
+        <div><div class="name">智能客服助手</div>
+          <div class="bubble">你好，我是基于公司内部资料（产品手册 / 售后政策 / FAQ）答疑的助手。
+          只引用已有资料、不编造；答不上来的会记录并上报。试试在下方 @我 提问 👇</div></div>
+      </div>
+    </div>
+    <div class="inputbar">
+      <span class="hint">提示：提问可很口语/模糊，切换上方「岗位」看理解差异</span>
+      <textarea id="q" placeholder="输入问题，例如：出问题了怎么办 / 客户那边能用吗"></textarea>
+      <button class="send" id="send">发送 @</button>
+    </div>
+  </div>
+
+  <div class="side">
+    <div class="tabs">
+      <button data-t="docs" class="on">资料库</button>
+      <button data-t="uq">未答看板</button>
+      <button data-t="adm">知识补全</button>
+    </div>
+    <div class="tabbody">
+      <div class="tab" id="tab-docs"></div>
+      <div class="tab hidden" id="tab-uq"></div>
+      <div class="tab hidden adm" id="tab-adm">
+        <p style="font-size:12px;color:var(--sub);line-height:1.5">
+          管理员补资料：写入后系统自动把「曾问过该问题」的员工拉回新答案。</p>
+        <label>关联问题（曾有人问过的，例如：能私有化部署吗）</label>
+        <input id="adm-q" placeholder="选填，用于精准下发">
+        <label>资料标题</label>
+        <input id="adm-title" placeholder="例如：X1 私有化部署实施指南">
+        <label>资料正文</label>
+        <textarea id="adm-text" placeholder="粘贴新答案内容…"></textarea>
+        <button id="adm-btn">入库并下发</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const scroll = $('#scroll');
+let context = ""; // 上一轮员工提问，作为模糊追问的上下文
+let detectedRole = "其他";
+
+async function detectRole(){
+  const u=$('#user').value.trim();
+  if(!u){detectedRole="其他";$('#role').value="其他";return;}
+  const r=await fetch('/api/whoami?user='+encodeURIComponent(u)).then(x=>x.json());
+  detectedRole=r.role||"其他";
+  $('#role').value=detectedRole;
+}
+
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2200);}
+
+function addMsg(side, name, html){
+  const m=document.createElement('div');
+  m.className='msg '+side;
+  m.innerHTML=`<div class="av">${side==='bot'?'🤖':'🧑'}</div>
+    <div><div class="name">${name}</div><div class="bubble">${html}</div></div>`;
+  scroll.appendChild(m); scroll.scrollTop=scroll.scrollHeight; return m;
+}
+function addSys(html){
+  const d=document.createElement('div'); d.className='sysline'; d.innerHTML=html;
+  scroll.appendChild(d); scroll.scrollTop=scroll.scrollHeight;
+}
+function esc(s){return (s||'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+
+async function ask(){
+  const q=$('#q').value.trim(); if(!q)return;
+  const role=$('#role').value;
+  const user=$('#user').value.trim()||'演示员工';
+  addMsg('me', esc(user)+'（'+role+'）','@智能客服助手 '+esc(q));
+  $('#q').value='';
+  // 员工气泡后，展示机器人的「理解」过程
+  const res=await fetch('/api/ask',{method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({question:q,user,role,context})}).then(r=>r.json());
+  const it=res.intent||{};
+  const autoTip = (user!=='演示员工' && detectedRole && detectedRole!=='其他')
+    ? `🪪 身份标签自动识别为【${esc(detectedRole)}】；`
+    : '';
+  if(it.rewritten && it.rewritten!==q){
+    addSys(`${autoTip}🔍 <b>结合岗位【${esc(it.role)}】</b>理解：补充关键词 ${esc((it.expansions||[]).join(' / '))}
+      → 检索式：「${esc(it.rewritten)}」`);
+  } else if (autoTip) {
+    addSys(autoTip.slice(0,-1));
+  }
+  if(res.answered){
+    let cites='';
+    if(res.citations&&res.citations.length){
+      cites='<div class="cites">'+res.citations.map(c=>
+        `<div class="cite"><span class="src">📎 ${esc(c.source)} · ${esc(c.section)}</span>
+         <span class="snip">${esc(c.snippet)}</span></div>`).join('')+'</div>';
+    }
+    addMsg('bot','智能客服助手', esc(res.answer)+'<span class="badge ok">已引用资料</span>'+cites);
+  }else{
+    addMsg('bot','智能客服助手', esc(res.answer)+'<span class="badge no">已上报</span>');
+  }
+  context=q; // 作为后续追问上下文
+  loadUQ();
+}
+
+/* 右侧三栏 */
+$('.tabs').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b)return;
+  document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');
+  ['docs','uq','adm'].forEach(t=>$('#tab-'+t).classList.toggle('hidden',b.dataset.t!==t));
+  if(b.dataset.t==='docs')loadDocs(); if(b.dataset.t==='uq')loadUQ();
+});
+
+async function loadDocs(){
+  const docs=await fetch('/api/docs').then(r=>r.json());
+  $('#tab-docs').innerHTML=docs.map(d=>
+    `<div class="doc"><b>${esc(d.title)}</b><span class="fmt">${esc(d.format.toUpperCase())}</span>
+     <div class="meta">${d.chars} 字符</div></div>`).join('');
+}
+async function loadUQ(){
+  const a=await fetch('/api/unanswered').then(r=>r.json());
+  const list=a.unanswered||[];
+  if(!list.length){$('#tab-uq').innerHTML='<p style="color:#8f959e;font-size:13px">暂无未答问题 🎉</p>';return;}
+  $('#tab-uq').innerHTML=list.map(u=>
+    `<div class="uq ${u.high_freq?'high':''}"><b>${esc(u.question)}</b>${u.high_freq?'<span class="tag">高频</span>':''}
+     <div class="cnt">累计 ${u.count} 次 · 24h ${u.last24h} · 7d ${u.last7d} · ${u.askers.length} 人问过</div></div>`).join('');
+}
+$('#adm-btn').addEventListener('click',async()=>{
+  const title=$('#adm-title').value.trim(), text=$('#adm-text').value.trim();
+  if(!title||!text){toast('请填写标题与正文');return;}
+  const res=await fetch('/api/add_doc',{method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({title,text,question:$('#adm-q').value.trim()})}).then(r=>r.json());
+  if(res.ok){toast(res.message); $('#adm-title').value='';$('#adm-text').value='';$('#adm-q').value='';loadUQ();}
+  else toast('入库失败');
+});
+$('#send').addEventListener('click',ask);
+$('#q').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();ask();}});
+
+$('#user').addEventListener('blur',detectRole);
+$('#user').addEventListener('change',detectRole);
+
+loadDocs(); loadUQ();
+</script>
+</body>
+</html>

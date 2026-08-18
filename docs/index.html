@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>企业内飞书智能客服 · 展示页</title>
+<style>
+  *{box-sizing:border-box;}
+  body{margin:0;background:#f5f7fa;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#263238;line-height:1.6;}
+  .wrap{max-width:920px;margin:0 auto;padding:28px 16px 56px;}
+  h1{font-size:24px;color:#1a237e;margin:0 0 6px;}
+  .sub{font-size:13px;color:#607d8b;margin:0 0 18px;}
+  .card{background:#fff;border:1px solid #e3e8ee;border-radius:14px;padding:14px;box-shadow:0 2px 10px rgba(38,50,56,.06);margin:16px 0;}
+  .arch{text-align:center;}
+  .arch svg{width:100%;height:auto;}
+  h2{font-size:17px;color:#0d47a1;margin:26px 0 8px;border-left:4px solid #1976d2;padding-left:10px;}
+  .chat{background:#fff;border:1px solid #e3e8ee;border-radius:12px;padding:14px;margin:12px 0;}
+  .row{display:flex;}
+  .row.me{justify-content:flex-end;}
+  .bubble{max-width:78%;padding:10px 13px;border-radius:12px;font-size:14px;white-space:pre-wrap;word-break:break-word;}
+  .bubble.me{background:#dcedc8;border-bottom-right-radius:4px;}
+  .bubble.bot{background:#e3f2fd;border-bottom-left-radius:4px;margin-top:8px;}
+  .bubble.bot.refuse{background:#fff3e0;border:1px solid #ffcc80;}
+  .badge{display:inline-block;margin-left:8px;font-size:11px;background:#1b5e20;color:#fff;border-radius:10px;padding:1px 8px;vertical-align:middle;}
+  .ans{font-size:13.5px;}
+  .cites{margin-top:8px;display:flex;flex-wrap:wrap;gap:6px;}
+  .cite{font-size:11.5px;background:#e8f5e9;color:#1b5e20;border-radius:8px;padding:2px 8px;}
+  .reason{margin-top:6px;font-size:12.5px;color:#b71c1c;}
+  .up{margin-top:6px;font-size:12px;color:#8e24aa;}
+  .meta{margin-top:8px;font-size:11.5px;color:#78909c;}
+  .meta code{background:#eceff1;padding:1px 5px;border-radius:5px;font-size:11px;}
+  .run{background:#0d47a1;color:#fff;border-radius:12px;padding:16px;font-size:13.5px;}
+  .run code{background:rgba(255,255,255,.18);padding:2px 7px;border-radius:6px;}
+  .links a{color:#1565c0;}
+  .foot{font-size:12px;color:#90a4ae;margin-top:24px;text-align:center;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>企业内飞书智能客服机器人 · 展示页</h1>
+  <p class="sub">基于公司私有资料（产品手册/售后政策/FAQ）的 RAG 问答 · 不幻觉 · 带引用 · 高频未答闭环下发</p>
+
+  <div class="card arch"><svg viewBox="0 0 960 840" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+    <defs>
+      <marker id="arw" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+        <path d="M0,0 L8,3 L0,6 Z" fill="#546e7a"/>
+      </marker>
+      <marker id="arwR" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+        <path d="M0,0 L8,3 L0,6 Z" fill="#8e24aa"/>
+      </marker>
+    </defs>
+
+    <!-- ===== 顶部知识源 ===== -->
+    <rect x="40" y="80" width="282" height="118" rx="12" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.5"/>
+    <text x="56" y="104" font-size="14" font-weight="700" fill="#0d47a1">知识源（私有资料，隔离不出域）</text>
+    <text x="56" y="128" font-size="12.5" fill="#263238">▢ 产品手册.docx（Word）</text>
+    <text x="56" y="148" font-size="12.5" fill="#263238">▢ 售后政策.pdf（PDF）</text>
+    <text x="56" y="168" font-size="12.5" fill="#263238">▢ FAQ.html（网页）</text>
+    <text x="56" y="188" font-size="11" fill="#455a72">解析 → 分块 → BM25+bigram → index.json</text>
+
+    <!-- ===== 顶部飞书场景 ===== -->
+    <rect x="638" y="80" width="282" height="118" rx="12" fill="#e8f5e9" stroke="#388e3c" stroke-width="1.5"/>
+    <text x="654" y="104" font-size="14" font-weight="700" fill="#1b5e20">飞书使用场景</text>
+    <text x="654" y="128" font-size="12.5" fill="#263238">员工在群内 @智能客服机器人</text>
+    <text x="654" y="150" font-size="12.5" fill="#263238">飞书通讯录提供岗位标签：</text>
+    <text x="654" y="170" font-size="12" fill="#1b5e20">销售 / 研发 / 客服 / 财务 / 行政</text>
+
+    <!-- ===== 中部：机器人处理管道 ===== -->
+    <rect x="330" y="206" width="344" height="430" rx="14" fill="#fff8e1" stroke="#f9a825" stroke-width="1.5"/>
+    <text x="348" y="230" font-size="14" font-weight="700" fill="#e65100">机器人处理管道</text>
+
+    <!-- steps -->
+    <g font-size="12.5" fill="#263238">
+      <rect x="348" y="244" width="308" height="46" rx="9" fill="#ffffff" stroke="#ffcc80"/>
+      <text x="360" y="271">① 事件接收（url_verification + message）</text>
+
+      <rect x="348" y="298" width="308" height="46" rx="9" fill="#ffffff" stroke="#ffcc80"/>
+      <text x="360" y="325">② 身份识别（open_id→通讯录→岗位）</text>
+      <rect x="572" y="304" width="46" height="18" rx="9" fill="#d32f2f"/>
+      <text x="595" y="317" font-size="10" fill="#fff" text-anchor="middle">NEW</text>
+
+      <rect x="348" y="352" width="308" height="46" rx="9" fill="#ffffff" stroke="#ffcc80"/>
+      <text x="360" y="379">③ 查询理解（按岗位/上下文改写）</text>
+
+      <rect x="348" y="406" width="308" height="46" rx="9" fill="#ffffff" stroke="#ffcc80"/>
+      <text x="360" y="433">④ 跨格式检索（BM25 + 中文 bigram）</text>
+
+      <rect x="348" y="460" width="308" height="46" rx="9" fill="#ffffff" stroke="#ffcc80"/>
+      <text x="360" y="487">⑤ 双重护栏（阈值拒答 + 内容护栏）</text>
+      <rect x="572" y="466" width="46" height="18" rx="9" fill="#d32f2f"/>
+      <text x="595" y="479" font-size="10" fill="#fff" text-anchor="middle">NEW</text>
+
+      <rect x="348" y="514" width="308" height="46" rx="9" fill="#ffffff" stroke="#ffcc80"/>
+      <text x="360" y="541">⑥ 答案生成（LLM 可插拔 / 抽取式引用）</text>
+
+      <rect x="348" y="568" width="308" height="46" rx="9" fill="#fff3e0" stroke="#f9a825" stroke-width="1.5"/>
+      <text x="360" y="595">⑦ 强制引用 + 飞书回消息</text>
+    </g>
+
+    <!-- ===== 右侧：不幻觉保障 ===== -->
+    <rect x="700" y="206" width="220" height="430" rx="14" fill="#ffebee" stroke="#e53935" stroke-width="1.5"/>
+    <text x="716" y="230" font-size="14" font-weight="700" fill="#b71c1c">不幻觉保障（贯穿全链）</text>
+    <g font-size="12" fill="#263238">
+      <circle cx="724" cy="258" r="3" fill="#b71c1c"/><text x="734" y="262">私有资料隔离（不出域）</text>
+      <circle cx="724" cy="292" r="3" fill="#b71c1c"/><text x="734" y="296">阈值拒答 MIN_SCORE</text>
+      <circle cx="724" cy="316" r="3" fill="#b71c1c"/><text x="734" y="320">（bigram 防单字误命中）</text>
+      <circle cx="724" cy="350" r="3" fill="#b71c1c"/><text x="734" y="354">内容护栏（无信源/无联系</text>
+      <circle cx="724" cy="374" r="3" fill="#b71c1c"/><text x="734" y="378">人 → 拒答并上报）</text>
+      <circle cx="724" cy="412" r="3" fill="#b71c1c"/><text x="734" y="416">强制引用（每条带</text>
+      <circle cx="724" cy="436" r="3" fill="#b71c1c"/><text x="734" y="440">source / section）</text>
+      <circle cx="724" cy="478" r="3" fill="#b71c1c"/><text x="734" y="482">黄金集评测 12/12 = 100%</text>
+    </g>
+
+    <!-- ===== 底部：闭环 ===== -->
+    <rect x="40" y="660" width="880" height="150" rx="14" fill="#f3e5f5" stroke="#8e24aa" stroke-width="1.5"/>
+    <text x="56" y="684" font-size="14" font-weight="700" fill="#4a148c">高频未答闭环下发（知识库自生长）</text>
+    <g font-size="11" fill="#263238" text-anchor="middle">
+      <rect x="56" y="700" width="118" height="50" rx="9" fill="#fff" stroke="#ce93d8"/>
+      <text x="115" y="722">提问日志</text><text x="115" y="738" font-size="9.5">(user/问题/命中)</text>
+
+      <rect x="194" y="700" width="118" height="50" rx="9" fill="#fff" stroke="#ce93d8"/>
+      <text x="253" y="722">未答看板</text><text x="253" y="738" font-size="9.5">(按频次标高频)</text>
+
+      <rect x="332" y="700" width="118" height="50" rx="9" fill="#fff" stroke="#ce93d8"/>
+      <text x="391" y="722">管理员补资料</text><text x="391" y="738" font-size="9.5">(上传新文档)</text>
+
+      <rect x="470" y="700" width="118" height="50" rx="9" fill="#fff" stroke="#ce93d8"/>
+      <text x="529" y="722">关联原问题</text><text x="529" y="738" font-size="9.5">(建立映射)</text>
+
+      <rect x="608" y="700" width="118" height="50" rx="9" fill="#fff" stroke="#ce93d8"/>
+      <text x="667" y="722">定向下发</text><text x="667" y="738" font-size="9.5">(曾提问员工)</text>
+
+      <rect x="746" y="700" width="118" height="50" rx="9" fill="#f3e5f5" stroke="#8e24aa" stroke-width="1.5"/>
+      <text x="805" y="722">再问即命中</text><text x="805" y="738" font-size="9.5">(闭环完成)</text>
+    </g>
+
+    <!-- ===== 连线 ===== -->
+    <!-- 知识源 → 管道 -->
+    <path d="M322,170 C322,210 330,250 352,290" fill="none" stroke="#546e7a" stroke-width="2" marker-end="url(#arw)"/>
+    <text x="300" y="232" font-size="10" fill="#607d8b" transform="rotate(-72 300 232)">摄取</text>
+    <!-- 飞书 → 管道 -->
+    <path d="M638,170 C638,200 660,206 690,240" fill="none" stroke="#546e7a" stroke-width="2" marker-end="url(#arw)"/>
+    <text x="612" y="200" font-size="10" fill="#607d8b">触发</text>
+    <!-- 管道 → 不幻觉面板（受约束） -->
+    <line x1="674" y1="430" x2="700" y2="430" stroke="#e53935" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#arw)"/>
+    <text x="678" y="422" font-size="9.5" fill="#e53935">受约束</text>
+    <!-- 管道 → 闭环 -->
+    <path d="M502,636 C502,650 502,650 502,660" fill="none" stroke="#546e7a" stroke-width="2" marker-end="url(#arw)"/>
+    <!-- 闭环 → 知识源（补资料回流索引） -->
+    <path d="M40,720 C18,560 18,300 40,180" fill="none" stroke="#8e24aa" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#arwR)"/>
+    <text x="22" y="450" font-size="10" fill="#8e24aa" transform="rotate(-90 22 450)">补资料回流索引</text>
+
+    <text x="40" y="828" font-size="11" fill="#90a4ae">说明：Web Demo 为飞书 @机器人 行为模拟器，非技术面试官可亲手点；真实飞书机器人代码见 feishu_bot.py（技术附件）。</text>
+  </svg></div>
+
+  <h2>① 自动识别提问者身份（无需手动选岗）</h2>
+  <p class="sub">飞书通讯录提供岗位标签，机器人收到消息即从 <code>open_id</code> 解析部门/职位映射到岗位，再决定检索焦点。下方示例均由系统<b>自动识别</b>。</p>
+
+  <h2>② 真实对话示例（由本仓库代码实时生成，非编造）</h2>
+  
+    <div class="chat">
+      <div class="row me"><div class="bubble me">这款多少钱 有折扣吗<span class="badge">销售</span></div></div>
+      <div class="bubble bot"><div class="ans">（以下为知识库中命中的原文，已附出处，未做任何编造）
+
+【FAQ·价格与商务】
+问：价格大概多少？
+答：标准版（65 寸，4+32G）指导价 ¥6,999；Pro 版（86 寸，8+128G，含三年内免费上门）指导价 ¥19,999。以上为含税价，大客户可走集采折扣，详见《产品手册》配置与价格章节。
+问：怎么开发票？
+答：下单后由云析科技开具增值税普通发票或专用发票。在「云析服务」小程序「我的订单」中提交发票抬头与税号，电子发票 1 个工作日内推送至预留邮箱；专票需提供开户行与账号，邮寄纸质件。
+
+【产品手册·六、配置与价格】
+标准版（65 寸，4+32G）指导价 ¥6,999；Pro 版（86 寸，8+128G，含三年免费上门）指导价 ¥19,999。上述为含税价，大客户可走集采折扣。
+
+【产品手册·五、适用场景】
+适用于会议室、培训室、远程协作与门店展示；金融、政企客户可走私有化版本满足合规。</div><div class="cites"><span class="cite">📎 FAQ · 价格与商务</span><span class="cite">📎 产品手册 · 六、配置与价格</span></div></div>
+      <div class="meta">自动识别岗位：<b>销售</b> ｜ 检索改写：<code>这款多少钱 有折扣吗 价格 报价 折扣 配置 卖点 方案 适用场景 客户 费用 含税</code> ｜ 命中分 28.38</div>
+    </div>
+
+    <div class="chat">
+      <div class="row me"><div class="bubble me">坏了怎么保修<span class="badge">客服</span></div></div>
+      <div class="bubble bot"><div class="ans">（以下为知识库中命中的原文，已附出处，未做任何编造）
+
+【售后政策·全文】
+智能会议平板 X1 售后政策
+一、保修范围
+整机保修 2 年，主要部件（含屏幕）保修 3
+年。保修期自发票开具之日起算。保修期内非人为故障免费维修或换新。
+二、报修流程
+1）拨打服务热线 400-820-0000 或登录「云析服务」小程序提交工单；2）客服远程诊断，可解决则在
+线指导；3）需上门的，城市区域 24 小时内响应，48 小时内上门。
+三、退换货政策
+自签收起 7 天内无理由退货，15
+天内性能故障免费换新。退换需保持外观完好、配件齐全。人为损坏不在退换范围。
+四、收费标准
+过保后提供有偿维修：上门检测费
+¥100/次（维修则不收），备件按官方价格收取，屏幕总成更换为例约 ¥2,800。
+五、服务时效
+全国主要城市提供上门服务，地级市以上 48
+
+【FAQ·售后与保修】
+问：保修多久？
+答：整机保修 2 年，主要部件（含屏幕）保修 3 年。保修期内非人为故障免费维修或换新；过保后提供有偿维修，详见《售后政策》。
+
+【FAQ·投屏与连接】
+问：无线投屏连不上怎么办？
+答：请确认电脑与平板在同一局域网；Windows 安装「云析传屏助手」后按提示配对；macOS 可用系统自带 AirPlay 投屏。若仍连不上，重启平板与路由器后重试，90% 的投屏故障由网络隔离引起。</div><div class="cites"><span class="cite">📎 售后政策 · 全文</span><span class="cite">📎 FAQ · 售后与保修</span></div></div>
+      <div class="meta">自动识别岗位：<b>客服</b> ｜ 检索改写：<code>坏了怎么保修 售后 保修 维修 退换 故障 报修 响应 处理</code> ｜ 命中分 36.64</div>
+    </div>
+
+    <div class="chat">
+      <div class="row me"><div class="bubble me">能不能接我们内部系统<span class="badge">研发</span></div></div>
+      <div class="bubble bot"><div class="ans">（以下为知识库中命中的原文，已附出处，未做任何编造）
+
+【FAQ·部署与对接】
+问：能不能私有化部署？
+答：支持。X1 可提供私有化版本，媒体服务器与会议录制数据均落在本企业内网，满足金融、政企对客户数据不出域的合规要求。私有化需单独签署部署服务协议。
+问：如何对接我们的业务系统 / API？
+答：X1 提供开放平台，包含 REST API、Webhook 与 SDK（Python/Java/Node）。可对接企业微信、飞书、OA 与日历系统，实现会议预约自动拉起、签到数据回写。接口文档见《产品手册》技术对接章节，或联系云析开放平台团队申请 AppKey。
+
+【产品手册·四、技术对接】
+开放平台提供 REST API、Webhook 与 SDK（Python / Java / Node），可对接企业微信、飞书、OA 与日历系统，实现会议预约自动拉起、签到数据回写。
+支持标准 WebRTC，浏览器内可直接发起会议；支持私有化部署，会议媒体与录制数据落在本企业内网，满足数据不出域合规要求。
+
+【产品手册·五、适用场景】
+适用于会议室、培训室、远程协作与门店展示；金融、政企客户可走私有化版本满足合规。</div><div class="cites"><span class="cite">📎 FAQ · 部署与对接</span><span class="cite">📎 产品手册 · 四、技术对接</span></div></div>
+      <div class="meta">自动识别岗位：<b>研发</b> ｜ 检索改写：<code>能不能接我们内部系统 接口 SDK API 对接 集成 协议 开发 技术参数 私有化</code> ｜ 命中分 50.36</div>
+    </div>
+
+    <div class="chat">
+      <div class="row me"><div class="bubble me">怎么开发票 走什么流程<span class="badge">财务</span></div></div>
+      <div class="bubble bot"><div class="ans">（以下为知识库中命中的原文，已附出处，未做任何编造）
+
+【FAQ·价格与商务】
+问：价格大概多少？
+答：标准版（65 寸，4+32G）指导价 ¥6,999；Pro 版（86 寸，8+128G，含三年内免费上门）指导价 ¥19,999。以上为含税价，大客户可走集采折扣，详见《产品手册》配置与价格章节。
+问：怎么开发票？
+答：下单后由云析科技开具增值税普通发票或专用发票。在「云析服务」小程序「我的订单」中提交发票抬头与税号，电子发票 1 个工作日内推送至预留邮箱；专票需提供开户行与账号，邮寄纸质件。
+
+【售后政策·全文】
+智能会议平板 X1 售后政策
+一、保修范围
+整机保修 2 年，主要部件（含屏幕）保修 3
+年。保修期自发票开具之日起算。保修期内非人为故障免费维修或换新。
+二、报修流程
+1）拨打服务热线 400-820-0000 或登录「云析服务」小程序提交工单；2）客服远程诊断，可解决则在
+线指导；3）需上门的，城市区域 24 小时内响应，48 小时内上门。
+三、退换货政策
+自签收起 7 天内无理由退货，15
+天内性能故障免费换新。退换需保持外观完好、配件齐全。人为损坏不在退换范围。
+四、收费标准
+过保后提供有偿维修：上门检测费
+¥100/次（维修则不收），备件按官方价格收取，屏幕总成更换为例约 ¥2,800。
+五、服务时效
+全国主要城市提供上门服务，地级市以上 48
+
+【产品手册·六、配置与价格】
+标准版（65 寸，4+32G）指导价 ¥6,999；Pro 版（86 寸，8+128G，含三年免费上门）指导价 ¥19,999。上述为含税价，大客户可走集采折扣。</div><div class="cites"><span class="cite">📎 FAQ · 价格与商务</span><span class="cite">📎 售后政策 · 全文</span></div></div>
+      <div class="meta">自动识别岗位：<b>财务</b> ｜ 检索改写：<code>怎么开发票 走什么流程 发票 开票 付款 账期 报销 含税 价格 费用</code> ｜ 命中分 36.52</div>
+    </div>
+
+    <div class="chat">
+      <div class="row me"><div class="bubble me">客户想批量采购 要来考察工厂 应该联系谁<span class="badge">销售</span></div></div>
+      <div class="bubble bot"><div class="ans">（以下为知识库中命中的原文，已附出处，未做任何编造）
+
+【FAQ·价格与商务】
+问：价格大概多少？
+答：标准版（65 寸，4+32G）指导价 ¥6,999；Pro 版（86 寸，8+128G，含三年内免费上门）指导价 ¥19,999。以上为含税价，大客户可走集采折扣，详见《产品手册》配置与价格章节。
+问：怎么开发票？
+答：下单后由云析科技开具增值税普通发票或专用发票。在「云析服务」小程序「我的订单」中提交发票抬头与税号，电子发票 1 个工作日内推送至预留邮箱；专票需提供开户行与账号，邮寄纸质件。
+
+【产品手册·六、配置与价格】
+标准版（65 寸，4+32G）指导价 ¥6,999；Pro 版（86 寸，8+128G，含三年免费上门）指导价 ¥19,999。上述为含税价，大客户可走集采折扣。
+
+【售后政策·全文】
+智能会议平板 X1 售后政策
+一、保修范围
+整机保修 2 年，主要部件（含屏幕）保修 3
+年。保修期自发票开具之日起算。保修期内非人为故障免费维修或换新。
+二、报修流程
+1）拨打服务热线 400-820-0000 或登录「云析服务」小程序提交工单；2）客服远程诊断，可解决则在
+线指导；3）需上门的，城市区域 24 小时内响应，48 小时内上门。
+三、退换货政策
+自签收起 7 天内无理由退货，15
+天内性能故障免费换新。退换需保持外观完好、配件齐全。人为损坏不在退换范围。
+四、收费标准
+过保后提供有偿维修：上门检测费
+¥100/次（维修则不收），备件按官方价格收取，屏幕总成更换为例约 ¥2,800。
+五、服务时效
+全国主要城市提供上门服务，地级市以上 48</div><div class="cites"><span class="cite">📎 FAQ · 价格与商务</span><span class="cite">📎 产品手册 · 六、配置与价格</span></div></div>
+      <div class="meta">自动识别岗位：<b>销售</b> ｜ 检索改写：<code>客户想批量采购 要来考察工厂 应该联系谁 价格 报价 折扣 配置 卖点 方案 适用场景 客户 采购 下单 交付 流程</code> ｜ 命中分 27.36</div>
+    </div>
+
+    <div class="chat">
+      <div class="row me"><div class="bubble me">你们老板叫什么名字<span class="badge">行政/采购</span></div></div>
+      <div class="bubble bot refuse"><div class="ans">未在知识库中找到可直接回答该问题的资料，已记录并上报知识库管理员补充。</div><div class="up">🔔 已自动记录并上报知识库管理员</div></div>
+      <div class="meta">自动识别岗位：<b>行政/采购</b> ｜ 检索改写：<code>你们老板叫什么名字 采购 下单 交付 物流 流程 部署</code> ｜ 命中分 9.98</div>
+    </div>
+
+    <div class="chat">
+      <div class="row me"><div class="bubble me">出问题了怎么办<span class="badge">其他</span></div></div>
+      <div class="bubble bot"><div class="ans">（以下为知识库中命中的原文，已附出处，未做任何编造）
+
+【FAQ·投屏与连接】
+问：无线投屏连不上怎么办？
+答：请确认电脑与平板在同一局域网；Windows 安装「云析传屏助手」后按提示配对；macOS 可用系统自带 AirPlay 投屏。若仍连不上，重启平板与路由器后重试，90% 的投屏故障由网络隔离引起。
+
+【FAQ·售后与保修】
+问：保修多久？
+答：整机保修 2 年，主要部件（含屏幕）保修 3 年。保修期内非人为故障免费维修或换新；过保后提供有偿维修，详见《售后政策》。
+
+【售后政策·全文】
+小时上门；偏远地区通过寄修处理，往返物流由云析承担。</div><div class="cites"><span class="cite">📎 FAQ · 投屏与连接</span><span class="cite">📎 FAQ · 售后与保修</span></div></div>
+      <div class="meta">自动识别岗位：<b>其他</b> ｜ 检索改写：<code>出问题了怎么办 故障 售后 报修 处理</code> ｜ 命中分 17.94</div>
+    </div>
+
+  <h2>③ 如何运行可交互完整版</h2>
+  <div class="run">
+    本页为静态展示。完整可交互机器人（飞书 @机器人 行为模拟器，含知识补全下发闭环）需本地运行：<br><br>
+    <code>git clone &lt;本仓库地址&gt;</code><br>
+    <code>cd enterprise-feishu-cs-bot/demo</code><br>
+    <code>python app.py</code> &nbsp;→&nbsp; 浏览器打开 <code>http://localhost:8000</code><br><br>
+    无需安装任何第三方库（已预构建索引 <code>demo/data/index.json</code>，零依赖可跑）。
+  </div>
+
+  <h2>④ 关键能力一览</h2>
+  <p class="sub">
+    • 多格式 ingestion：Word(.docx)/PDF(.pdf)/网页(.html) 统一解析分块<br>
+    • 中文 bigram BM25 检索，抗单字误命中<br>
+    • 双重护栏：阈值拒答（MIN_SCORE）+ 内容护栏（无信源/无联系人 → 拒答并上报）<br>
+    • 强制引用：每条回答带 source / section<br>
+    • 高频未答闭环：未答看板 → 管理员补资料 → 定向下发当初提问员工<br>
+    • 黄金集评测：不幻觉准确率 <b>12/12 = 100%</b><br>
+    • 真实飞书接入代码见 <code>demo/feishu_bot.py</code>（技术附件）
+  </p>
+
+  <p class="foot">企业内飞书智能客服 · 面试作品　|　完整源码与运行说明见仓库 README</p>
+</div>
+</body>
+</html>

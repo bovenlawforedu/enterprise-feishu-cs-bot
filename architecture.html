@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>企业内飞书智能客服 · 系统架构</title>
+<style>
+  body{margin:0;background:#f5f7fa;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#263238;}
+  .wrap{max-width:1000px;margin:0 auto;padding:24px 16px 40px;}
+  h1{font-size:22px;color:#1a237e;margin:0 0 4px;}
+  .sub{font-size:13px;color:#607d8b;margin:0 0 16px;}
+  .card{background:#fff;border:1px solid #e3e8ee;border-radius:14px;padding:10px;box-shadow:0 2px 10px rgba(38,50,56,.06);}
+  svg{width:100%;height:auto;display:block;}
+  .legend{font-size:12px;color:#78909c;margin-top:10px;line-height:1.6;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>企业内飞书智能客服 · 系统架构</h1>
+  <p class="sub">RAG 私有资料问答 · 不幻觉护栏 · 高频未答闭环下发　|　Web Demo = 飞书 @机器人 行为模拟器</p>
+  <div class="card">
+  <svg viewBox="0 0 960 840" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+    <defs>
+      <marker id="arw" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+        <path d="M0,0 L8,3 L0,6 Z" fill="#546e7a"/>
+      </marker>
+      <marker id="arwR" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+        <path d="M0,0 L8,3 L0,6 Z" fill="#8e24aa"/>
+      </marker>
+    </defs>
+
+    <!-- ===== 顶部知识源 ===== -->
+    <rect x="40" y="80" width="282" height="118" rx="12" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.5"/>
+    <text x="56" y="104" font-size="14" font-weight="700" fill="#0d47a1">知识源（私有资料，隔离不出域）</text>
+    <text x="56" y="128" font-size="12.5" fill="#263238">▢ 产品手册.docx（Word）</text>
+    <text x="56" y="148" font-size="12.5" fill="#263238">▢ 售后政策.pdf（PDF）</text>
+    <text x="56" y="168" font-size="12.5" fill="#263238">▢ FAQ.html（网页）</text>
+    <text x="56" y="188" font-size="11" fill="#455a72">解析 → 分块 → BM25+bigram → index.json</text>
+
+    <!-- ===== 顶部飞书场景 ===== -->
+    <rect x="638" y="80" width="282" height="118" rx="12" fill="#e8f5e9" stroke="#388e3c" stroke-width="1.5"/>
+    <text x="654" y="104" font-size="14" font-weight="700" fill="#1b5e20">飞书使用场景</text>
+    <text x="654" y="128" font-size="12.5" fill="#263238">员工在群内 @智能客服机器人</text>
+    <text x="654" y="150" font-size="12.5" fill="#263238">飞书通讯录提供岗位标签：</text>
+    <text x="654" y="170" font-size="12" fill="#1b5e20">销售 / 研发 / 客服 / 财务 / 行政</text>
+
+    <!-- ===== 中部：机器人处理管道 ===== -->
+    <rect x="330" y="206" width="344" height="430" rx="14" fill="#fff8e1" stroke="#f9a825" stroke-width="1.5"/>
+    <text x="348" y="230" font-size="14" font-weight="700" fill="#e65100">机器人处理管道</text>
+
+    <!-- steps -->
+    <g font-size="12.5" fill="#263238">
+      <rect x="348" y="244" width="308" height="46" rx="9" fill="#ffffff" stroke="#ffcc80"/>
+      <text x="360" y="271">① 事件接收（url_verification + message）</text>
+
+      <rect x="348" y="298" width="308" height="46" rx="9" fill="#ffffff" stroke="#ffcc80"/>
+      <text x="360" y="325">② 身份识别（open_id→通讯录→岗位）</text>
+      <rect x="572" y="304" width="46" height="18" rx="9" fill="#d32f2f"/>
+      <text x="595" y="317" font-size="10" fill="#fff" text-anchor="middle">NEW</text>
+
+      <rect x="348" y="352" width="308" height="46" rx="9" fill="#ffffff" stroke="#ffcc80"/>
+      <text x="360" y="379">③ 查询理解（按岗位/上下文改写）</text>
+
+      <rect x="348" y="406" width="308" height="46" rx="9" fill="#ffffff" stroke="#ffcc80"/>
+      <text x="360" y="433">④ 跨格式检索（BM25 + 中文 bigram）</text>
+
+      <rect x="348" y="460" width="308" height="46" rx="9" fill="#ffffff" stroke="#ffcc80"/>
+      <text x="360" y="487">⑤ 双重护栏（阈值拒答 + 内容护栏）</text>
+      <rect x="572" y="466" width="46" height="18" rx="9" fill="#d32f2f"/>
+      <text x="595" y="479" font-size="10" fill="#fff" text-anchor="middle">NEW</text>
+
+      <rect x="348" y="514" width="308" height="46" rx="9" fill="#ffffff" stroke="#ffcc80"/>
+      <text x="360" y="541">⑥ 答案生成（LLM 可插拔 / 抽取式引用）</text>
+
+      <rect x="348" y="568" width="308" height="46" rx="9" fill="#fff3e0" stroke="#f9a825" stroke-width="1.5"/>
+      <text x="360" y="595">⑦ 强制引用 + 飞书回消息</text>
+    </g>
+
+    <!-- ===== 右侧：不幻觉保障 ===== -->
+    <rect x="700" y="206" width="220" height="430" rx="14" fill="#ffebee" stroke="#e53935" stroke-width="1.5"/>
+    <text x="716" y="230" font-size="14" font-weight="700" fill="#b71c1c">不幻觉保障（贯穿全链）</text>
+    <g font-size="12" fill="#263238">
+      <circle cx="724" cy="258" r="3" fill="#b71c1c"/><text x="734" y="262">私有资料隔离（不出域）</text>
+      <circle cx="724" cy="292" r="3" fill="#b71c1c"/><text x="734" y="296">阈值拒答 MIN_SCORE</text>
+      <circle cx="724" cy="316" r="3" fill="#b71c1c"/><text x="734" y="320">（bigram 防单字误命中）</text>
+      <circle cx="724" cy="350" r="3" fill="#b71c1c"/><text x="734" y="354">内容护栏（无信源/无联系</text>
+      <circle cx="724" cy="374" r="3" fill="#b71c1c"/><text x="734" y="378">人 → 拒答并上报）</text>
+      <circle cx="724" cy="412" r="3" fill="#b71c1c"/><text x="734" y="416">强制引用（每条带</text>
+      <circle cx="724" cy="436" r="3" fill="#b71c1c"/><text x="734" y="440">source / section）</text>
+      <circle cx="724" cy="478" r="3" fill="#b71c1c"/><text x="734" y="482">黄金集评测 12/12 = 100%</text>
+    </g>
+
+    <!-- ===== 底部：闭环 ===== -->
+    <rect x="40" y="660" width="880" height="150" rx="14" fill="#f3e5f5" stroke="#8e24aa" stroke-width="1.5"/>
+    <text x="56" y="684" font-size="14" font-weight="700" fill="#4a148c">高频未答闭环下发（知识库自生长）</text>
+    <g font-size="11" fill="#263238" text-anchor="middle">
+      <rect x="56" y="700" width="118" height="50" rx="9" fill="#fff" stroke="#ce93d8"/>
+      <text x="115" y="722">提问日志</text><text x="115" y="738" font-size="9.5">(user/问题/命中)</text>
+
+      <rect x="194" y="700" width="118" height="50" rx="9" fill="#fff" stroke="#ce93d8"/>
+      <text x="253" y="722">未答看板</text><text x="253" y="738" font-size="9.5">(按频次标高频)</text>
+
+      <rect x="332" y="700" width="118" height="50" rx="9" fill="#fff" stroke="#ce93d8"/>
+      <text x="391" y="722">管理员补资料</text><text x="391" y="738" font-size="9.5">(上传新文档)</text>
+
+      <rect x="470" y="700" width="118" height="50" rx="9" fill="#fff" stroke="#ce93d8"/>
+      <text x="529" y="722">关联原问题</text><text x="529" y="738" font-size="9.5">(建立映射)</text>
+
+      <rect x="608" y="700" width="118" height="50" rx="9" fill="#fff" stroke="#ce93d8"/>
+      <text x="667" y="722">定向下发</text><text x="667" y="738" font-size="9.5">(曾提问员工)</text>
+
+      <rect x="746" y="700" width="118" height="50" rx="9" fill="#f3e5f5" stroke="#8e24aa" stroke-width="1.5"/>
+      <text x="805" y="722">再问即命中</text><text x="805" y="738" font-size="9.5">(闭环完成)</text>
+    </g>
+
+    <!-- ===== 连线 ===== -->
+    <!-- 知识源 → 管道 -->
+    <path d="M322,170 C322,210 330,250 352,290" fill="none" stroke="#546e7a" stroke-width="2" marker-end="url(#arw)"/>
+    <text x="300" y="232" font-size="10" fill="#607d8b" transform="rotate(-72 300 232)">摄取</text>
+    <!-- 飞书 → 管道 -->
+    <path d="M638,170 C638,200 660,206 690,240" fill="none" stroke="#546e7a" stroke-width="2" marker-end="url(#arw)"/>
+    <text x="612" y="200" font-size="10" fill="#607d8b">触发</text>
+    <!-- 管道 → 不幻觉面板（受约束） -->
+    <line x1="674" y1="430" x2="700" y2="430" stroke="#e53935" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#arw)"/>
+    <text x="678" y="422" font-size="9.5" fill="#e53935">受约束</text>
+    <!-- 管道 → 闭环 -->
+    <path d="M502,636 C502,650 502,650 502,660" fill="none" stroke="#546e7a" stroke-width="2" marker-end="url(#arw)"/>
+    <!-- 闭环 → 知识源（补资料回流索引） -->
+    <path d="M40,720 C18,560 18,300 40,180" fill="none" stroke="#8e24aa" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#arwR)"/>
+    <text x="22" y="450" font-size="10" fill="#8e24aa" transform="rotate(-90 22 450)">补资料回流索引</text>
+
+    <text x="40" y="828" font-size="11" fill="#90a4ae">说明：Web Demo 为飞书 @机器人 行为模拟器，非技术面试官可亲手点；真实飞书机器人代码见 feishu_bot.py（技术附件）。</text>
+  </svg>
+  </div>
+  <p class="legend">图例：蓝色＝知识源摄取　绿色＝飞书触发场景　橙色＝机器人处理管道　红色＝不幻觉保障　紫色＝高频未答闭环。"NEW"＝本轮新增能力（自动身份识别 / 双重护栏）。</p>
+</div>
+</body>
+</html>
