@@ -2,7 +2,7 @@
 
 一个基于公司**私有资料**（产品手册 / 售后政策 / FAQ）的 RAG 问答机器人原型：员工在飞书里 `@机器人` 提问，机器人只依据私有资料作答、**不编造**、每条回答带引用来源；答不出的高频问题自动上报，补完资料后自动下发当初提问的员工。
 
-> 🌐 **静态展示页（面试官点开即看，无需运行）**：`docs/index.html`（架构图 + 真实对话示例）
+> 🌐 **静态展示页（面试官点开即看，无需运行）**：https://bovenlawforedu.github.io/enterprise-feishu-cs-bot/（架构图 + 真实对话示例）
 > 📄 **需求确认清单**：`需求确认清单_企业内飞书智能客服.md`
 > 📘 **完整运行说明**：`demo/README.md`　|　🧩 **真实飞书接入代码**：`demo/feishu_bot.py`
 
@@ -34,7 +34,7 @@
 ## 快速开始
 
 ```bash
-git clone <本仓库地址>
+git clone https://github.com/bovenlawforedu/enterprise-feishu-cs-bot.git
 cd enterprise-feishu-cs-bot/demo
 python app.py          # 浏览器打开 http://localhost:8000
 ```
